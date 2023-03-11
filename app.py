@@ -1,4 +1,6 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, url_for
+from werkzeug.exceptions import abort
+from werkzeug.utils import redirect
 
 app = Flask(__name__)
 
@@ -26,6 +28,29 @@ def mostrar_edad(edad):
 def mostrar_nombre(nombre):
     return f'Tu nombre es: {nombre}'
 
+
 @app.route('/mostrar/html/<nombre>', methods=['GET', 'POST'])
 def mostrar_nombre_html(nombre):
     return render_template('mostrar.html', nombre=nombre)
+
+
+@app.route('/redireccionar')
+def redireccionar():
+    return redirect(url_for('mostrar_nombre', nombre='Daniel'))
+
+
+@app.route('/salir')
+def salir():
+    return abort(404)
+
+
+@app.errorhandler(404)
+def pagina_no_encontrada(error):
+    return render_template('error.html', error=error), 404
+
+
+@app.route('/api/mostrar/<nombre>')
+def mostrar_json(nombre):
+    return {
+        'nombre': nombre
+    }
